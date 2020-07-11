@@ -132,6 +132,20 @@ class Bridge {
           break;
         case 'cleancustomarea':
           console.log('Received `cleancustomarea` command.');
+
+          let options;
+          try {
+            options = JSON.parse(message);
+            if(options.area === undefined || options.runs === undefined 
+              || options.area === '' || options.runs === '' 
+              || options.area === null || options.runs === null) {
+              throw("Mising options!")
+            }
+          } catch (e) {
+            console.log('Failed to start custom area cleaning. Options supplied in invalid form!', e);
+          }
+
+          device.run('customarea', 'start', options.area, options.runs);
           break;
         case 'charge':
           console.log('Received `charge` command.');
