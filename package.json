@@ -1,0 +1,19 @@
+{
+  "name": "ecovacs-mqtt",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "dependencies": {
+    "async-mqtt": "^2.6.1",
+    "canvas": "^2.6.1",
+    "ecovacs-deebot": "^0.4.16",
+    "mqtt": "^4.1.0",
+    "node-machine-id": "^1.1.12"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Marius Kießling",
+  "license": "MIT"
+}
