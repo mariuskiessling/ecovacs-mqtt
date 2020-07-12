@@ -34,7 +34,7 @@ class Ecovacs {
           deviceReady.then((vacuum) => {
             console.log('The vacuum ' + vacuum.vacuum.did + ' (Nick: `' + vacuum.vacuum.nick + '`) is ready.');
           }).catch((e) => {
-            console.log("One device did not get ready in time!", e)
+            console.log('One device did not get ready in time!', e)
             reject(e)
           });
         });
