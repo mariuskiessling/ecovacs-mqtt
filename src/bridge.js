@@ -59,12 +59,16 @@ class Bridge {
       console.log('Failed to connect to the Ecovacs systems!', e);
     }
 
-    this.ecovacsClient.getDevice().then((device) => {
-      this.publishDeviceInfo(device);
-      this.subscribeToEvents(device);
-      this.subscribeToCommands(device.vacuum.did);
-      this.handleCommands(device);
-      this.triggerAllEvents(device);
+    this.ecovacsClient.getDevices().then((devices) => {
+      devices.forEach(async (device) => {
+        this.publishDeviceInfo(device);
+        this.subscribeToEvents(device);
+        this.subscribeToCommands(device.vacuum.did);
+        this.handleCommands(device);
+        this.triggerAllEvents(device);
+
+        console.log('The vacuum ' + device.vacuum.did + ' (Nick: `' + device.vacuum.nick + '`) is linked.');
+      });
     }).catch((e) => {
       console.log('Failed to establish a connection to the vacuum!', e);
     });

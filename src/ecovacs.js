@@ -22,25 +22,42 @@ class Ecovacs {
     return this.api.connect(this.username, this.password)
   }
 
-  getDevice() {
+  getDevices() {
     return new Promise((resolve, reject) => {
       this.api.devices().then((devices) => {
-        if (devices.length != 1) {
-          reject('Received ' + devices.length + ' Ecovacs device(s). Can only deal with one device')
-        }
+        let deviceReadyPromises = []
 
-        let vacuum = devices[0]
-        let vacbot = this.api.getVacBot(this.api.uid, EcoVacsAPI.REALM, this.api.resource, this.api.user_access_token, vacuum, this.continent);
+        devices.forEach(async (device) => {
+          let deviceReady = this.isDeviceReady(device);
+          deviceReadyPromises.push(deviceReady);
 
-        let timeout = setTimeout(() => {
-          reject('Failed to establish a connection to the bot within 30 seconds!');
-        }, 30000);
+          deviceReady.then((vacuum) => {
+            console.log('The vacuum ' + vacuum.vacuum.did + ' (Nick: `' + vacuum.vacuum.nick + '`) is ready.');
+          }).catch((e) => {
+            console.log("One device did not get ready in time!", e)
+            reject(e)
+          });
+        });
 
-        vacbot.on('ready', (event) => {
-          clearTimeout(timeout)
-          resolve(vacbot);
+        Promise.all(deviceReadyPromises).then((devices) => {
+          resolve(devices);
         });
       })
+    });
+  }
+
+  async isDeviceReady(device) {
+    return new Promise((resolve, reject) => {
+      let vacuum = this.api.getVacBot(this.api.uid, EcoVacsAPI.REALM, this.api.resource, this.api.user_access_token, device, this.continent);
+
+      let timeout = setTimeout(() => {
+        reject('Failed to establish a connection to at the vacuums within 30 seconds!');
+      }, 30000);
+
+      vacuum.on('ready', (event) => {
+        clearTimeout(timeout);
+        resolve(vacuum);
+      });
     });
   }
 }
