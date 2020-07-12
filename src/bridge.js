@@ -8,6 +8,7 @@ class Bridge {
 
     this.commands = [
       'clean',
+      'cleanarea',
       'cleancustomarea',
       'charge',
       'pause',
@@ -41,7 +42,6 @@ class Bridge {
         topic: 'mapareas',
         fn: async (result, topic, mqttClient) => {
           try {
-            console.log(topic);
             await mqttClient.publish(topic + '/' + result.mapSpotAreaID, JSON.stringify(result));
           } catch (e) {
             console.log('Failed to publish map areas!', e);
@@ -140,7 +140,24 @@ class Bridge {
           console.log('Received `clean` command.');
           device.run("clean")
           break;
-        case 'cleancustomarea':
+        case 'cleanarea': {
+          console.log('Received `cleanarea` command.');
+
+          let options;
+          try {
+            options = JSON.parse(message);
+            if(options.areaid === undefined || options.areaid === ''  || options.areaid === null) {
+              throw("Mising options!")
+            }
+
+            device.run('SpotArea', 'start', options.areaid);
+          } catch (e) {
+            console.log('Failed to start area cleaning. Options supplied in invalid form!', e);
+          }
+
+          break;
+        }
+        case 'cleancustomarea': {
           console.log('Received `cleancustomarea` command.');
 
           let options;
@@ -151,12 +168,14 @@ class Bridge {
               || options.area === null || options.runs === null) {
               throw("Mising options!")
             }
+
+            device.run('customarea', 'start', options.area, options.runs);
           } catch (e) {
             console.log('Failed to start custom area cleaning. Options supplied in invalid form!', e);
           }
 
-          device.run('customarea', 'start', options.area, options.runs);
           break;
+        }
         case 'charge':
           console.log('Received `charge` command.');
           device.run("charge")
