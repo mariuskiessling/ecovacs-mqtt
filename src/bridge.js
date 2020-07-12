@@ -10,6 +10,7 @@ class Bridge {
       'clean',
       'cleancustomarea',
       'charge',
+      'pause',
       'stop'
     ];
 
@@ -56,14 +57,6 @@ class Bridge {
     });
 
     this.updateStatus('online');
-
-
-
-    //setInterval(() => {
-
-      //this.updateStatus('online');
-    //}, 60000);
-
   }
 
   async updateStatus(status) {
@@ -150,6 +143,10 @@ class Bridge {
         case 'charge':
           console.log('Received `charge` command.');
           device.run("charge")
+          break;
+        case 'pause':
+          console.log('Received `pause` command.');
+          device.run("pause")
           break;
         case 'stop':
           console.log('Received `stop` command.');
