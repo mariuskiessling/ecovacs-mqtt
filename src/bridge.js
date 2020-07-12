@@ -34,6 +34,19 @@ class Bridge {
         name: 'DeebotPosition',
         trigger: 'getposition',
         topic: 'position'
+      },
+      {
+        name: 'MapSpotAreaInfo',
+        trigger: 'getMapSet',
+        topic: 'mapareas',
+        fn: async (result, topic, mqttClient) => {
+          try {
+            console.log(topic);
+            await mqttClient.publish(topic + '/' + result.mapSpotAreaID, JSON.stringify(result));
+          } catch (e) {
+            console.log('Failed to publish map areas!', e);
+          }
+        }
       }
     ];
   }
@@ -90,7 +103,11 @@ class Bridge {
 
       device.on(event.name, async (result) => {
         try {
-          await this.mqttClient.publish(fullTopic, String(result));
+          if (event.fn !== undefined) {
+            await event.fn(result, fullTopic, this.mqttClient);
+          } else {
+            await this.mqttClient.publish(fullTopic, String(result));
+          }
         } catch (e) {
           console.log('Failed to republish `' + event.name + '` under ' + fullTopic + '!', e);
         }
