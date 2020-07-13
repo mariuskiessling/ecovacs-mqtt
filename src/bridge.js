@@ -56,7 +56,9 @@ class Bridge {
         topic: 'mapareas',
         fn: async (result, topic, mqttClient) => {
           try {
-            await mqttClient.publish(topic + '/' + result.mapSpotAreaID, JSON.stringify(result));
+            await mqttClient.publish(topic + '/' + result.mapSpotAreaID, JSON.stringify(result), {
+              retain: true
+            });
           } catch (e) {
             console.log('Failed to publish map areas!', e);
           }
@@ -92,7 +94,9 @@ class Bridge {
 
   async updateStatus(status) {
     try {
-      await this.mqttClient.publish(this.topic + '/bridge/status', status);
+      await this.mqttClient.publish(this.topic + '/bridge/status', status, {
+        retain: true
+      });
     } catch (e) {
       console.log('Failed to write to the topic!', e);
     }
@@ -100,7 +104,9 @@ class Bridge {
 
   async publishDeviceInfo(device) {
     try {
-      await this.mqttClient.publish(this.topic + '/' + device.vacuum.did + '/info', JSON.stringify(device.vacuum));
+      await this.mqttClient.publish(this.topic + '/' + device.vacuum.did + '/info', JSON.stringify(device.vacuum), {
+        retain: true
+      });
     } catch (e) {
       console.log('Failed to publish device info!', e);
     }
@@ -124,7 +130,9 @@ class Bridge {
           if (event.fn !== undefined) {
             await event.fn(result, fullTopic, this.mqttClient);
           } else {
-            await this.mqttClient.publish(fullTopic, String(result));
+            await this.mqttClient.publish(fullTopic, String(result), {
+              retain: true
+            });
           }
         } catch (e) {
           console.log('Failed to republish `' + event.name + '` under ' + fullTopic + '!', e);
