@@ -32,6 +32,20 @@ class Bridge {
         topic: 'cleanstate'
       },
       {
+        name: 'CleanLog',
+        trigger: 'getlogapicleanlogs',
+        topic: 'cleanlogs',
+        fn: async (result, topic, mqttClient) => {
+          try {
+            result.forEach(async (logEntry) => {
+              await mqttClient.publish(topic + '/' + logEntry.id, JSON.stringify(logEntry));
+            });
+          } catch (e) {
+            console.log('Failed to publish clean logs!', e);
+          }
+        }
+      },
+      {
         name: 'DeebotPosition',
         trigger: 'getposition',
         topic: 'position'
